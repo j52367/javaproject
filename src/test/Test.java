@@ -96,9 +96,9 @@ public class Test {
         Table sortedTable;
 
 //        13) 테이블을 기준 열인덱스(5)로 정렬한다. 이 때, 오름차순(true), null값은 나중에(false)(원본 테이블 정렬), 존재하지 않는 열 인덱시 전달시 예외발생해도 됨.
-//        testTable.sort(5, true, false).show();
-//        sortedTable = testTable.sort(5, true, false);
-//        System.out.println("identity test for sort(index, asc, nullOrder): " + (!testTable.equals(sortedTable) ? "Fail" : "Pass"));
+        testTable.sort(5, true, false).show();
+        sortedTable = testTable.sort(5, true, false);
+        System.out.println("identity test for sort(index, asc, nullOrder): " + (!testTable.equals(sortedTable) ? "Fail" : "Pass"));
 
 //        14) 테이블을 기준 열인덱스(5)로 정렬한다. 이 때, 내림차순(false), null값은 앞에(true)(새 테이블), 존재하지 않는 열 인덱시 전달시 예외발생해도 됨.
 //        Database.sort(testTable, 5, false, true).show();
