@@ -36,7 +36,7 @@ class ColumnImpl implements Column{
 
     @Override
     public int count() {
-        return 0;
+        return cell.size();
     }
 
     @Override
@@ -46,7 +46,8 @@ class ColumnImpl implements Column{
 
     @Override
     public boolean isNumericColumn() {
-        return false;
+        String[] arr = cell.toArray(new String[cell.size()]);
+        return arr[1].matches("[+-]?\\d*(\\.\\d+)?")?true:false;
     }
 
     @Override
