@@ -10,22 +10,197 @@ class TableImpl implements Table {
 
     @Override
     public Table crossJoin(Table rightTable) {
-        return null;
+        TableImpl t = new TableImpl();
+        t.name = this.name+"+"+rightTable.getName();
+        ColumnImpl [] c = new ColumnImpl[this.getRowCount()+rightTable.getRowCount()];
+        ColumnImpl[] thisColArr = tablecol.toArray(new ColumnImpl[tablecol.size()]);
+        for(int i=0;i<this.getRowCount();i++){
+            c[i] = new ColumnImpl();
+            c[i].name=this.name+"."+thisColArr[i].name;
+            String [] thisCellArr = thisColArr[i].cell.toArray(new String[thisColArr[i].cell.size()]);
+            for(int j=0;j<thisCellArr.length;j++){
+                for(int k=0;k<rightTable.getColumnCount();k++) {
+                    c[i].cell.add(thisCellArr[j]);
+                }
+            }
+        }
+        ColumnImpl[] rightTableColArr = new ColumnImpl[rightTable.getRowCount()];
+        for(int i=this.getRowCount();i<c.length;i++) {
+            c[i] = new ColumnImpl();
+            rightTableColArr[i - this.getRowCount()] = (ColumnImpl) rightTable.getColumn(i - this.getRowCount());
+            c[i].name = rightTable.getName() + "." + rightTableColArr[i - this.getRowCount()].name;
+            String[] rightCellArr = rightTableColArr[i - this.getRowCount()].cell.toArray(new String[rightTableColArr[i - this.getRowCount()].cell.size()]);
+            for(int k=0;k<c[0].cell.size()/rightTable.getColumnCount();k++) {
+                for (int j = 0; j < rightTable.getColumnCount(); j++) {
+                    c[i].cell.add(rightCellArr[j]);
+                }
+            }
+        }
+        for(int i=0;i<c.length;i++){
+            t.tablecol.add(c[i]);
+        }
+        return t;
     }
 
     @Override
     public Table innerJoin(Table rightTable, List<JoinColumn> joinColumns) {
-        return null;
+        TableImpl t=(TableImpl) this.crossJoin(rightTable);
+        JoinColumn [] joinColumnsArr = joinColumns.toArray(new JoinColumn[joinColumns.size()]);
+        String[][] temp = new String[t.getRowCount()][t.getColumnCount()];
+        for(int i=0;i<joinColumnsArr.length;i++){
+            String a = this.name+"."+joinColumnsArr[i].getColumnOfThisTable();
+            String b = rightTable.getName()+"."+joinColumnsArr[i].getColumnOfAnotherTable();
+            ColumnImpl A = (ColumnImpl) t.getColumn(a);
+            ColumnImpl B = (ColumnImpl) t.getColumn(b);
+            String [] aa = A.cell.toArray(new String[A.cell.size()]);
+            String [] bb = B.cell.toArray(new String[B.cell.size()]);
+            List<Integer> I = new ArrayList<>();
+            for(int k=0;k<aa.length;k++){
+                if(aa[k].equals(bb[k])){
+                    I.add(k);
+                }
+            }
+            int[] arr = new int[I.size()];
+            for (int k = 0 ; k < I.size() ; k++) {
+                arr[k] = I.get(k).intValue();
+            }
+            t=(TableImpl) t.selectRowsAt(arr);
+        }
+        return t;
     }
 
     @Override
     public Table outerJoin(Table rightTable, List<JoinColumn> joinColumns) {
-        return null;
+        int a1=this.getRowCount();
+        int a3=this.getColumnCount();
+        int a2=rightTable.getRowCount();
+        int a4=rightTable.getColumnCount();
+        TableImpl t = new TableImpl();
+        JoinColumn [] joinColumnsArr = joinColumns.toArray(new JoinColumn[joinColumns.size()]);
+        for(int Q=0;Q<joinColumnsArr.length;Q++) {
+            ColumnImpl A = (ColumnImpl) this.getColumn(joinColumnsArr[Q].getColumnOfThisTable());
+            ColumnImpl B = (ColumnImpl) rightTable.getColumn(joinColumnsArr[Q].getColumnOfAnotherTable());
+            int aa = 0, bb = 0;
+            t.name = this.name + "+" + rightTable.getName();
+            ColumnImpl[] c = new ColumnImpl[a1 + a2];
+            ColumnImpl[] thisColArr = tablecol.toArray(new ColumnImpl[a1]);
+            String[][] s = new String[a3][a1 + a2];
+            for (int i = 0; i < a1; i++) {
+                c[i] = new ColumnImpl();
+                c[i].name = this.name + "." + thisColArr[i].name;
+                if (thisColArr[i].name.equals(A.name)) {
+                    aa = i;
+                }
+                String[] thisCellArr = thisColArr[i].cell.toArray(new String[thisColArr[i].cell.size()]);
+                for (int j = 0; j < a3; j++) {
+                    s[j][i] = thisCellArr[j];
+                }
+            }
+            ColumnImpl[] rightTableColArr = new ColumnImpl[a2];
+            for (int i = a1; i < a1 + a2; i++) {
+                c[i] = new ColumnImpl();
+                rightTableColArr[i - a1] = (ColumnImpl) rightTable.getColumn(i - a1);
+            }
+            String[][] rs = new String[a4][a2];
+            for (int i = 0; i < a2; i++) {
+                String[] tmp = rightTableColArr[i].cell.toArray(new String[rightTableColArr[i].cell.size()]);
+                for (int j = 0; j < a4; j++) {
+                    rs[j][i] = tmp[j];
+                }
+            }
+            for (int i = a1; i < a1 + a2; i++) {
+                c[i] = new ColumnImpl();
+                c[i].name = rightTable.getName() + "." + rightTableColArr[i - a1].name;
+                if (rightTableColArr[i - a1].name.equals(B.name)) {
+                    bb = i;
+                }
+            }
+            for (int i = 0; i < a3; i++) {
+                for (int j = 0; j < a4; j++) {
+                    if (rs[j][bb - a1].equals(s[i][aa])) {
+                        for (int k = a1; k < a1 + a2; k++) {
+                            s[i][k] = rs[j][k - a1];
+                        }
+                    }
+                }
+            }
+            int cnt = 0;
+            for (int i = a3 - 1; i >= 0; i--) {
+                if (s[i][a1] == null) {
+                    String[] tmp = s[i];
+                    s[i] = s[a3 - 1 - cnt];
+                    s[a3 - 1 - cnt] = tmp;
+                    cnt++;
+                }
+            }
+            for (int i = 0; i < a3 - cnt; i++) {
+                for (int j = i + 1; j < a3 - cnt; j++) {
+                    if (s[i][0].compareTo(s[j][0]) > 0) {
+                        String[] tmp = s[i];
+                        s[i] = s[j];
+                        s[j] = tmp;
+                    }
+                }
+            }
+            for (int i = 0; i < a1 + a2; i++) {
+                for (int j = 0; j < a3; j++) {
+                    c[i].cell.add(s[j][i]);
+                }
+            }
+            for (int i = 0; i < a1 + a2; i++) {
+                t.tablecol.add(c[i]);
+            }
+        }
+        return t;
     }
 
     @Override
     public Table fullOuterJoin(Table rightTable, List<JoinColumn> joinColumns) {
-        return null;
+        JoinColumn [] joinColumnsArr = joinColumns.toArray(new JoinColumn[joinColumns.size()]);
+        TableImpl t = (TableImpl) this.outerJoin(rightTable,joinColumns);
+        for(int Q=0;Q<joinColumnsArr.length;Q++) {
+            int bb = 0, aa = 0;
+            ColumnImpl[] c = t.tablecol.toArray(new ColumnImpl[t.tablecol.size()]);
+            for (int i = 0; i < c.length; i++) {
+                if (c[i].name.equals(this.getName() + "." + joinColumnsArr[Q].getColumnOfThisTable())) {
+                    aa = i;
+                }
+            }
+            String[] s = c[aa].cell.toArray(new String[t.getColumnCount()]);
+            ColumnImpl[] r = new ColumnImpl[rightTable.getRowCount()];
+            String[][] rA = new String[rightTable.getColumnCount()][r.length];
+            for (int i = 0; i < r.length; i++) {
+                r[i] = (ColumnImpl) rightTable.getColumn(i);
+                if (r[i].name.equals(joinColumnsArr[Q].getColumnOfAnotherTable())) {
+                    bb = i;
+                }
+                String[] tmp = r[i].cell.toArray(new String[r[i].cell.size()]);
+                for (int j = 0; j < tmp.length; j++) {
+                    rA[j][i] = tmp[j];
+                }
+            }
+            for (int i = 0; i < rA.length; i++) {
+                int cnt = 0;
+                for (int j = 0; j < s.length; j++) {
+                    if (!(rA[i][bb].equals(s[j]))) {
+                        cnt++;
+                    }
+                }
+                if (cnt == s.length) {
+                    for (int k = 0; k < this.getRowCount(); k++) {
+                        c[k].cell.add(null);
+                    }
+                    for (int k = this.getRowCount(); k < t.getRowCount(); k++) {
+                        c[k].cell.add(rA[i][k - this.getRowCount()]);
+                    }
+                }
+            }
+            t.tablecol.clear();
+            for (int i = 0; i < c.length; i++) {
+                t.tablecol.add(c[i]);
+            }
+        }
+        return t;
     }
 
     @Override
@@ -64,7 +239,7 @@ class TableImpl implements Table {
         //출력
         for (int i = 0; i < cellLength; i++) {
             for (int j = 0; j < tableLength; j++) {
-                System.out.printf(" %" + columnsMaxLength[j] + "s|", temp[j][i]);
+                System.out.printf(" %" + columnsMaxLength[j] + "s |", temp[j][i]);
             }
             System.out.print("\n");
         }
@@ -382,7 +557,7 @@ class TableImpl implements Table {
     @Override
     public int getColumnCount() {
         ColumnImpl[] colArr = tablecol.toArray(new ColumnImpl[tablecol.size()]);
-        return colArr[0].count();
+        return colArr[0].cell.size();
     }
 
     @Override
@@ -393,9 +568,10 @@ class TableImpl implements Table {
 
     @Override
     public Column getColumn(String name) {
+        //수정필요
         ColumnImpl[] colArr = tablecol.toArray(new ColumnImpl[tablecol.size()]);
         for (int i = 0; i < colArr.length; i++) {
-            if (colArr[i].name == name) {
+            if (colArr[i].name.equals(name)) {
                 return colArr[i];
             }
         }

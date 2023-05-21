@@ -108,22 +108,25 @@ public class Test {
 //        System.out.println("identity test for Database.sort(index, asc, nullOrder): " + (testTable.equals(sortedTable) ? "Fail" : "Pass"));
 
         Table rightTable = authors;
-
 //        15) cross join
-        Table crossJoined = testTable.crossJoin(rightTable);
-        crossJoined.show();
+        //o
+//        Table crossJoined = testTable.crossJoin(rightTable);
+//        crossJoined.show();
 
 //        16) inner join
+        //o
 //        Table innerJoined = testTable.innerJoin(rightTable, List.of(new JoinColumn("author_id", "id")));
 //        innerJoined.show();
 
         rightTable = translators;
 
 //        17) outer join
+        //o
 //        Table outerJoined = testTable.outerJoin(rightTable, List.of(new JoinColumn("translator_id", "id")));
 //        outerJoined.show();
 
 //        18) full outer join
+        //어설픈거같음
 //        Table fullOuterJoined = testTable.fullOuterJoin(rightTable, List.of(new JoinColumn("translator_id", "id")));
 //        fullOuterJoined.show();
 
