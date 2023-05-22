@@ -126,11 +126,12 @@ public class Test {
 //        outerJoined.show();
 
 //        18) full outer join
-        //어설픈거같음
+        //o
 //        Table fullOuterJoined = testTable.fullOuterJoin(rightTable, List.of(new JoinColumn("translator_id", "id")));
 //        fullOuterJoined.show();
 
 //        19) 조건식을 만족하는 행을 얻는다.
+        //o
 //        testTable.selectRowsBy("title", (String x) -> x.contains("Your")).show();
 //        testTable.selectRowsBy("author_id", (Integer x) -> x < 15).show();
 //        testTable.selectRowsBy("title", (String x) -> x.length() < 8).show();
@@ -142,6 +143,7 @@ public class Test {
         String selectedColumnName;
 
 //        20) setValue(int index, int value) or setValue(int index, String value)호출 전후 비교
+        //o
 //        System.out.println("*** before setValue ***");
 //        selectedColumnIndex = (int) (Math.random() * testTable.getColumnCount());
 //        selectedRowIndex = (int) (Math.random() * testTable.getColumn(selectedColumnIndex).count());
@@ -159,6 +161,7 @@ public class Test {
 //        testTable.describe();
 
 //        21) T getValue(int index, Class<T> t) or String getValue(int index) 호출 전후 비교
+        //o
 //        System.out.println("*** before getValue ***");
 //        selectedColumnIndex = (int) (Math.random() * testTable.getColumnCount());
 //        selectedRowIndex = (int) (Math.random() * testTable.getColumn(selectedColumnIndex).count());

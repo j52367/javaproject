@@ -272,12 +272,19 @@ class TableImpl implements Table {
             }
             tmp[i + 1][2] = String.valueOf(cnt);
             tmp[i + 1][2] = tmp[i + 1][2].concat(" non-null");
-            if (arr[1].matches("[+-]?\\d*(\\.\\d+)?")) {
-                tmp[i + 1][3] = "int";
-                I++;
-            } else {
+            int ss=0;
+            for(int j=0;j<arr.length;j++) {
+                if (arr[j]!=null&&!arr[j].matches("[+-]?\\d*(\\.\\d+)?")) {
+                    ss++;
+                }
+            }
+            if(ss!=0){
                 tmp[i + 1][3] = "String";
                 S++;
+            }
+            else{
+                tmp[i + 1][3] = "int";
+                I++;
             }
         }
         int[] max = new int[3];
@@ -476,7 +483,34 @@ class TableImpl implements Table {
 
     @Override
     public <T> Table selectRowsBy(String columnName, Predicate<T> predicate) {
-        return null;
+        ColumnImpl[] colArr = tablecol.toArray(new ColumnImpl[tablecol.size()]);
+        ColumnImpl c =  new ColumnImpl();
+        for(int i=0;i<tablecol.size();i++) {
+            if(colArr[i].name.equals(columnName)) {
+                c = colArr[i];
+            }
+        }
+        String [] s = c.cell.toArray(new String[c.count()]);
+        List<Integer> arr = new ArrayList<>();
+        for(int i=0;i<s.length;i++){
+            if(s[i]!=null&&s[i].matches("[+-]?\\d*(\\.\\d+)?")){
+                Integer j = Integer.parseInt(s[i]);
+                if(predicate.test( (T) j )){
+                    arr.add(i);
+                }
+            }
+            else{
+                if(predicate.test((T)s[i])){
+                    arr.add(i);
+                }
+            }
+        }
+        int [] ar = new int[arr.size()];
+        for(int i=0;i<arr.size();i++){
+            ar[i] = arr.get(i).intValue();
+        }
+        Table t = this.selectRowsAt(ar);
+        return t;
     }
 
     @Override
@@ -556,26 +590,24 @@ class TableImpl implements Table {
 
     @Override
     public int getColumnCount() {
-        ColumnImpl[] colArr = tablecol.toArray(new ColumnImpl[tablecol.size()]);
-        return colArr[0].cell.size();
+        return tablecol.get(0).count();
     }
 
     @Override
     public Column getColumn(int index) {
-        ColumnImpl[] colArr = tablecol.toArray(new ColumnImpl[tablecol.size()]);
-        return colArr[index];
+        return tablecol.get(index);
     }
 
     @Override
     public Column getColumn(String name) {
-        //수정필요
+        int k=0;
         ColumnImpl[] colArr = tablecol.toArray(new ColumnImpl[tablecol.size()]);
         for (int i = 0; i < colArr.length; i++) {
             if (colArr[i].name.equals(name)) {
-                return colArr[i];
+                k=i;
             }
         }
-        return null;
+        return tablecol.get(k);
     }
 }
 
