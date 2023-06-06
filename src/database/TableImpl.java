@@ -610,4 +610,3 @@ class TableImpl implements Table {
         return tablecol.get(k);
     }
 }
-
