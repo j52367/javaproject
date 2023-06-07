@@ -246,6 +246,18 @@ class TableImpl implements Table {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        TableImpl p = (TableImpl) obj;
+        if(p.name.equals(name)) return true;
+        else return false;
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(name);
+    }
+
+
+    @Override
     public void describe() {
         int I = 0;
         int S = 0;
