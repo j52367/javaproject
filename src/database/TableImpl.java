@@ -246,16 +246,17 @@ class TableImpl implements Table {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        TableImpl p = (TableImpl) obj;
-        if(p.name.equals(name)) return true;
-        else return false;
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TableImpl table = (TableImpl) o;
+        return Objects.equals(name, table.name);
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(name);
     }
-
 
     @Override
     public void describe() {
@@ -336,7 +337,6 @@ class TableImpl implements Table {
             }
         }
         TableImpl t = new TableImpl();
-        t.name = this.name;
         for (int i = 0; i < a.length; i++) {
             t.tablecol.add(a[i]);
         }
@@ -359,7 +359,6 @@ class TableImpl implements Table {
             }
         }
         TableImpl t = new TableImpl();
-        t.name = this.name;
         for (int i = 0; i < a.length; i++) {
             t.tablecol.add(a[i]);
         }
@@ -383,7 +382,6 @@ class TableImpl implements Table {
             }
         }
         TableImpl t = new TableImpl();
-        t.name = this.name;
         for (int i = 0; i < a.length; i++) {
             t.tablecol.add(a[i]);
         }
@@ -406,7 +404,6 @@ class TableImpl implements Table {
             }
         }
         TableImpl t = new TableImpl();
-        t.name = this.name;
         for (int i = 0; i < a.length; i++) {
             t.tablecol.add(a[i]);
         }
@@ -426,7 +423,6 @@ class TableImpl implements Table {
             }
         }
         TableImpl t = new TableImpl();
-        t.name = this.name;
         for (int i = 0; i < a.length; i++) {
             t.tablecol.add(a[i]);
         }
@@ -446,7 +442,6 @@ class TableImpl implements Table {
             }
         }
         TableImpl t = new TableImpl();
-        t.name = this.name;
         for (int i = 0; i < a.length; i++) {
             t.tablecol.add(a[i]);
         }
@@ -466,7 +461,6 @@ class TableImpl implements Table {
             }
         }
         TableImpl t = new TableImpl();
-        t.name = this.name;
         for (int i = 0; i < endIndex - beginIndex; i++) {
             t.tablecol.add(a[i]);
         }
@@ -486,7 +480,6 @@ class TableImpl implements Table {
             }
         }
         TableImpl t = new TableImpl();
-        t.name = this.name;
         for (int i : indices) {
             t.tablecol.add(a[i]);
         }
